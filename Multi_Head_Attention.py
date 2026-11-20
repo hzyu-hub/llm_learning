@@ -78,7 +78,7 @@ tokens = sentence.split()  # ['I', 'love', 'China']
 # 2. Convert the tokens into integer vocabulary IDs.
 vocab = {"I": 0, "love": 1, "China": 2}
 tokens_ids = torch.tensor([vocab[token] for token in tokens])  # [0, 1, 2]
-seq_length = tokens_ids.shape[1]
+seq_length = len(tokens_ids)  # 3
 
 # 3. Convert the integer IDs into embeddings.
 embedding_dim = d_model
