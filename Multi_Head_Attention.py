@@ -78,12 +78,12 @@ tokens = sentence.split()  # ['I', 'love', 'China']
 # 2. Convert the tokens into integer vocabulary IDs.
 vocab = {"I": 0, "love": 1, "China": 2}
 tokens_ids = torch.tensor([vocab[token] for token in tokens])  # [0, 1, 2]
-seq_length = len(tokens_ids)  # 3
+seq_length = tokens_ids.shape[-1]  # 3
 
 # 3. Convert the integer IDs into embeddings.
 embedding_dim = d_model
 token_embedding = nn.Embedding(len(vocab), embedding_dim)
-word_vectors = token_embedding(tokens_ids)
+word_vectors = token_embedding(tokens_ids).squeeze(0)  # (1, seq_length, d_model)
 
 # 4.Look up a trainable position vector for each token ID
 position_embedding = nn.Embedding(seq_length, embedding_dim)
@@ -91,7 +91,7 @@ position_ids = torch.arange(seq_length).unsqueeze(0)  # (1, seq_length)
 position_vectors = position_embedding(position_ids)
 
 # 5. Add token and position vectors to construct the attetion input
-x = word_vectors + position_vectors  # (batch_size, seq_length, d_model
+x = word_vectors + position_vectors  # (batch_size, seq_length, d_model)
 
 # 6. Initialize trainable attention projection matrices
 w_q = nn.Parameter(torch.randn(d_model, d_model))
