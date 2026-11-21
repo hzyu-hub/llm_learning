@@ -65,47 +65,48 @@ def multi_head_attention(x, w_q, w_k, w_v, w_o, num_heads):
     return output, attn_weights
 
 
-torch.manual_seed(0)
+if __name__ == "__main__":
+    torch.manual_seed(0)
 
-# Example usage
-d_model = 4
-num_heads = 2
+    # Example usage
+    d_model = 4
+    num_heads = 2
 
-# 1. Tokenize the sentence using a simple world-level tokenizer
-sentence = "I love China"
-tokens = sentence.split()  # ['I', 'love', 'China']
+    # 1. Tokenize the sentence using a simple world-level tokenizer
+    sentence = "I love China"
+    tokens = sentence.split()  # ['I', 'love', 'China']
 
-# 2. Convert the tokens into integer vocabulary IDs.
-vocab = {"I": 0, "love": 1, "China": 2}
-tokens_ids = torch.tensor([vocab[token] for token in tokens])  # [0, 1, 2]
-seq_length = tokens_ids.shape[-1]  # 3
+    # 2. Convert the tokens into integer vocabulary IDs.
+    vocab = {"I": 0, "love": 1, "China": 2}
+    tokens_ids = torch.tensor([vocab[token] for token in tokens])  # [0, 1, 2]
+    seq_length = tokens_ids.shape[-1]  # 3
 
-# 3. Convert the integer IDs into embeddings.
-embedding_dim = d_model
-token_embedding = nn.Embedding(len(vocab), embedding_dim)
-word_vectors = token_embedding(tokens_ids).squeeze(0)  # (1, seq_length, d_model)
+    # 3. Convert the integer IDs into embeddings.
+    embedding_dim = d_model
+    token_embedding = nn.Embedding(len(vocab), embedding_dim)
+    word_vectors = token_embedding(tokens_ids).squeeze(0)  # (1, seq_length, d_model)
 
-# 4.Look up a trainable position vector for each token ID
-position_embedding = nn.Embedding(seq_length, embedding_dim)
-position_ids = torch.arange(seq_length).unsqueeze(0)  # (1, seq_length)
-position_vectors = position_embedding(position_ids)
+    # 4.Look up a trainable position vector for each token ID
+    position_embedding = nn.Embedding(seq_length, embedding_dim)
+    position_ids = torch.arange(seq_length).unsqueeze(0)  # (1, seq_length)
+    position_vectors = position_embedding(position_ids)
 
-# 5. Add token and position vectors to construct the attetion input
-x = word_vectors + position_vectors  # (batch_size, seq_length, d_model)
+    # 5. Add token and position vectors to construct the attetion input
+    x = word_vectors + position_vectors  # (batch_size, seq_length, d_model)
 
-# 6. Initialize trainable attention projection matrices
-w_q = nn.Parameter(torch.randn(d_model, d_model))
-w_k = nn.Parameter(torch.randn(d_model, d_model))
-w_v = nn.Parameter(torch.randn(d_model, d_model))
-w_o = nn.Parameter(torch.randn(d_model, d_model))
+    # 6. Initialize trainable attention projection matrices
+    w_q = nn.Parameter(torch.randn(d_model, d_model))
+    w_k = nn.Parameter(torch.randn(d_model, d_model))
+    w_v = nn.Parameter(torch.randn(d_model, d_model))
+    w_o = nn.Parameter(torch.randn(d_model, d_model))
 
-# 7. Compute multi-head attention
-output, attn_weights = multi_head_attention(x, w_q, w_k, w_v, w_o, num_heads)
+    # 7. Compute multi-head attention
+    output, attn_weights = multi_head_attention(x, w_q, w_k, w_v, w_o, num_heads)
 
-print("tokens:", tokens)
-print("tokens_ids:", tokens_ids.tolist())
-print("position_ids:", position_ids.tolist())
-print("word_vectors:", word_vectors)
-print("position_vectors:", position_vectors)
-print("attention_output:", output)
-print("attention_weights:", attn_weights)
+    print("tokens:", tokens)
+    print("tokens_ids:", tokens_ids.tolist())
+    print("position_ids:", position_ids.tolist())
+    print("word_vectors:", word_vectors)
+    print("position_vectors:", position_vectors)
+    print("attention_output:", output)
+    print("attention_weights:", attn_weights)
